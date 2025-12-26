@@ -1,0 +1,116 @@
+Table 1: employees
++----+-----------+--------+
+| id | name      | dept   |
++----+-----------+--------+
+| 1  | Ramesh    | IT     |
+| 2  | Suresh    | HR     |
+| 3  | Mahesh    | IT     |
+| 4  | Naresh    | Sales  |
+| 5  | Rajesh    | HR     |
+| 6  | Kiran     | IT     |
++----+-----------+--------+
+
+Table 2: salaries
++----+------------+--------+
+| emp_id | salary | bonus  |
++-------+--------+--------+
+| 1     | 50000  | 5000   |
+| 2     | 40000  | 4000   |
+| 3     | 60000  | 6000   |
+| 4     | 45000  | 4500   |
+| 5     | 42000  | 4200   |
+| 6     | 70000  | 7000   |
++-------+--------+--------+
+
+
+
+1️⃣ Employee name and salary
+SELECT t1.name, t2.salary
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id;
+
+
+✅ Correct
+
+2️⃣ Employee name, department, and bonus
+SELECT t1.name, t1.dept, t2.bonus
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id;
+
+
+✅ Correct
+
+3️⃣ Employees with salary > 50000 (include all columns)
+SELECT *
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id
+WHERE t2.salary > 50000;
+
+
+✅ Correct
+
+4️⃣ Employees with total salary > 60000 (salary + bonus)
+
+Here’s how you can add the two columns in SQL:
+
+SELECT t1.name, t1.dept, (t2.salary + t2.bonus) AS total_salary
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id
+WHERE (t2.salary + t2.bonus) > 60000;
+
+
+💡 t2.salary + t2.bonus calculates total salary on the fly
+This is exactly how MNCs expect it
+
+5️⃣ Department-wise total salary
+SELECT t1.dept, SUM(t2.salary) AS department_wise_total_salary
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id
+GROUP BY t1.dept;
+
+
+✅ Correct
+
+6️⃣ HR employees with bonus
+SELECT t1.name, t2.bonus
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id
+WHERE t1.dept = 'HR';
+
+
+✅ Correct
+
+7️⃣ IT employees with salary > 60000
+SELECT t1.name, t2.salary, t1.dept
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id
+WHERE t1.dept = 'IT' AND t2.salary > 60000;
+
+
+✅ Correct
+
+8️⃣ Average salary per department
+SELECT t1.dept, AVG(t2.salary) AS avg_salary_per_department
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id
+GROUP BY t1.dept;
+
+
+✅ Correct
+
+Previous error: AS t1 after AVG was wrong
+
+9️⃣ Employee name and total salary, sorted descending
+SELECT t1.name, (t2.salary + t2.bonus) AS total_salary
+FROM employees AS t1
+INNER JOIN salaries AS t2
+ON t1.id = t2.id
+ORDER BY total_salary DESC;
