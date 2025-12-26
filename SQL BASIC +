@@ -1,0 +1,64 @@
++----+-----------+--------+--------+
+| id | name      | dept   | salary |
++----+-----------+--------+--------+
+| 1  | Ramesh    | IT     | 50000  |
+| 2  | Suresh    | HR     | 40000  |
+| 3  | Mahesh    | IT     | 60000  |
+| 4  | Naresh    | Sales  | 45000  |
+| 5  | Rajesh    | HR     | 42000  |
+| 6  | Kiran     | IT     | 70000  |
++----+-----------+--------+--------+
+
+
+Q1. Find total number of employees in each department
+SELECT dept, COUNT(*) AS total_number_of_employees_in_each_department
+FROM employees
+GROUP BY dept;
+
+Q2. Find average salary of each department
+SELECT dept, AVG(salary) AS each_department_avg_salary
+FROM employees
+GROUP BY dept;
+
+Q3. Find maximum salary in each department
+SELECT dept, MAX(salary) AS each_department_max_salary
+FROM employees
+GROUP BY dept;
+
+Q4. Find minimum salary in each department
+SELECT dept, MIN(salary) AS each_department_min_salary
+FROM employees
+GROUP BY dept;
+
+Q5. Find departments where average salary is greater than 50000
+SELECT dept, AVG(salary)
+FROM employees
+GROUP BY dept
+HAVING AVG(salary) > 50000;
+
+Q6. Find departments having more than 2 employees
+SELECT dept, COUNT(*)
+FROM employees
+GROUP BY dept
+HAVING COUNT(*) > 2;
+
+Q7. Find total salary paid for each department
+SELECT dept, SUM(salary) AS total_salary_paid_each_department
+FROM employees
+GROUP BY dept;
+
+Q8. Find departments where total salary is greater than 100000
+SELECT dept, SUM(salary)
+FROM employees
+GROUP BY dept
+HAVING SUM(salary) > 100000;
+
+Q9. Find number of employees in IT department
+SELECT COUNT(*) AS number_of_employees_IT
+FROM employees
+WHERE dept = 'it';
+
+Q10. Find average salary of IT department
+SELECT AVG(salary) AS avg_salary_of_It
+FROM employees
+WHERE dept = 'It';
