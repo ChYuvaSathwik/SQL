@@ -1,0 +1,47 @@
++----+-----------+--------+--------+------------+
+| id | name      | dept   | salary | join_date  |
++----+-----------+--------+--------+------------+
+| 1  | Ramesh    | IT     | 50000  | 2022-01-10 |
+| 2  | Suresh    | HR     | 40000  | 2021-03-15 |
+| 3  | Mahesh    | IT     | 60000  | 2020-07-20 |
+| 4  | Naresh    | Sales  | 45000  | 2022-11-05 |
+| 5  | Rajesh    | HR     | 42000  | 2019-06-25 |
+| 6  | Kiran     | IT     | 70000  | 2018-02-18 |
++----+-----------+--------+--------+------------+
+Q1. Get all students
+SELECT * FROM students;
+
+Q2. Get name and marks of all students
+SELECT name, marks FROM students;
+
+Q3. Find students who belong to class 10
+SELECT * FROM students
+WHERE class = 10;
+
+Q4. Find students who scored more than 75 marks
+SELECT * FROM students
+WHERE marks > 75;
+
+Q5. List students from Chennai city
+SELECT * FROM students
+WHERE city = 'Chennai';
+
+Q6. Find students from class 9 and sort by marks (DESC)
+SELECT * FROM students
+WHERE class = 9
+ORDER BY marks DESC;
+
+Q7. Find students whose name starts with 'D'
+SELECT * FROM students
+WHERE name LIKE 'D%';
+
+Q8. Display distinct cities
+SELECT DISTINCT city FROM students;
+
+Q9. Find students whose marks are between 70 and 90
+SELECT * FROM students
+WHERE marks BETWEEN 70 AND 90;
+
+Q10. Find total number of students
+SELECT COUNT(*) AS total_number_of_students
+FROM students;
