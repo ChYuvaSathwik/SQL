@@ -1,0 +1,121 @@
+📘 TABLES
+customers
+id	name	city
+1	Rahul	Delhi
+2	Anita	Mumbai
+3	Suresh	Chennai
+4	Priya	Delhi
+orders
+id	customer_id	product	amount
+101	1	Laptop	50000
+102	1	Phone	20000
+103	2	TV	40000
+104	3	Laptop	55000
+105	3	Mouse	5000
+106	4	Phone	25000
+🧪 QUESTIONS + QUERIES
+Q1
+
+Question: Show each customer’s name, city, and the amount of each order.
+
+SELECT t1.name, t1.city, t2.amount AS order_amount
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id;
+
+Q2
+
+Question: Show total amount spent by each customer.
+
+SELECT t1.name, t1.city, SUM(t2.amount) AS total_order_amount
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+GROUP BY t1.id, t1.name;
+
+Q3
+
+Question: Show customers who spent more than 60,000 in total.
+
+SELECT t1.name, SUM(t2.amount) AS total_spent
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+GROUP BY t1.id, t1.name
+HAVING SUM(t2.amount) > 60000;
+
+Q4
+
+Question: Show number of orders placed by each customer.
+
+SELECT t1.name, COUNT(*) AS orders_count
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+GROUP BY t1.id, t1.name;
+
+Q5
+
+Question: Show customers who placed more than 1 order.
+
+SELECT t1.name, COUNT(*) AS orders_count
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+GROUP BY t1.id, t1.name
+HAVING COUNT(*) > 1;
+
+
+
+Q6
+
+Question: Show total order amount per city.
+
+SELECT t1.city, SUM(t2.amount) AS total_order_amount
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+GROUP BY t1.city;
+
+Q7
+
+Question: Show customers who ordered ‘Laptop’ and total amount they spent.
+
+SELECT t1.name, SUM(t2.amount) AS total_spent
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+WHERE t2.product = 'Laptop'
+GROUP BY t1.id, t1.name;
+
+Q8
+
+Question: Show average order amount per customer.
+
+SELECT t1.name, AVG(t2.amount) AS avg_order_amount
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+GROUP BY t1.id, t1.name;
+
+Q9
+
+Question: Show customers who have only 1 order.
+
+SELECT t1.name, COUNT(*) AS orders_count
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+GROUP BY t1.id, t1.name
+HAVING COUNT(*) = 1;
+
+Q10
+
+Question: Show customer name, total amount spent, sorted by total amount descending.
+
+SELECT t1.name, SUM(t2.amount) AS total_spent
+FROM customers AS t1
+INNER JOIN orders AS t2
+ON t1.id = t2.customer_id
+GROUP BY t1.id, t1.name
+ORDER BY total_spent DESC;
