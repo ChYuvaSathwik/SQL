@@ -1,0 +1,76 @@
+1️⃣ Find employees without a department
+
+Question: Find employees who don’t have a department.
+
+Answer:
+
+SELECT employee_name
+FROM Employee
+WHERE department_id IS NULL;
+
+
+Explanation:
+
+Checks the Employee table for employees whose department_id is NULL.
+
+2️⃣ Total revenue per product
+
+Question: Calculate total revenue per product.
+
+Answer:
+
+SELECT product, SUM(revenue) AS total_revenue
+FROM table_name
+GROUP BY product;
+
+
+Explanation:
+
+Groups rows by product and sums up the revenue for each product.
+
+3️⃣ Top 3 highest paid salaries
+
+Question: Get the top 3 highest paid salaries.
+
+Answer:
+
+SELECT salary
+FROM employees
+ORDER BY salary DESC
+LIMIT 3;
+
+
+Explanation:
+
+Orders salaries from highest to lowest and selects the first 3.
+
+4️⃣ Employees without a valid department (LEFT JOIN example)
+
+Question: Find employees whose department_id does not exist in the Department table.
+
+Answer:
+
+SELECT e.employee_name
+FROM Employee e
+LEFT JOIN Department d ON e.department_id = d.department_id
+WHERE d.department_id IS NULL;
+
+
+Explanation:
+
+LEFT JOIN keeps all employees, and WHERE d.department_id IS NULL filters those without a matching department.
+
+5️⃣ Total revenue per product (GROUP BY logic check)
+
+Question: Calculate total revenue per product using proper GROUP BY logic.
+
+Answer:
+
+SELECT product, SUM(revenue) AS total_revenue
+FROM table_name
+GROUP BY product;
+
+
+Explanation:
+
+Do not include revenue in GROUP BY; only group by product to get total revenue per product.
