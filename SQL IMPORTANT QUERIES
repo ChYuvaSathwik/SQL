@@ -1,0 +1,117 @@
+FIND EMPLOYEES SALARY IS GREATER THAN THE DEPARTMENT AVG SALARY 3 APPROCHES I WRITTEN FOR IT
+
+
+SELECT emp_name, emp_salary, emp_dept
+FROM (
+    SELECT emp_name,
+           emp_salary,
+           emp_dept,
+           AVG(emp_salary) OVER(PARTITION BY emp_dept) AS dept_wise_avg_salary
+    FROM employee
+) AS t1
+WHERE emp_salary > dept_wise_avg_salary;
+
+
+SELECT emp_name, emp_salary, emp_dept
+FROM employee AS t1
+WHERE emp_salary > (
+    SELECT AVG(emp_salary)
+    FROM employee AS t2
+    WHERE t2.emp_dept = t1.emp_dept
+);
+
+
+
+select emp_name,emp_salary,emp_dept from employee as t1
+
+join(select emp_dept,avg(emp_salary) as departmentwise_salary from employee
+     
+    group by emp_dept) as t2
+on
+t1.emp_dept=t2.emp_dept
+
+where t1.emp_salary>t2.departmentwise_salary;
+
+
+show customers who have laptop and phone orders
+
+select t1.name from customer as t1
+
+inner join
+
+orders as t2
+
+on
+
+t1.id=t2.customer_id
+
+where t2.product in ('laptop','phone')
+
+group by t1.id,t1.name
+
+having count(Distinct t2.product)=2;
+
+
+show employees whose salary is greater than 70000
+
+select t1.emp_name,(t2.salary+t2.bonus) as total_salary from employee as t1
+
+inner join
+
+salaries as t2
+
+on
+
+t1.emp_id=t2.emp_id
+
+where (t2.salary+t2.bonus)>70000;
+
+
+
+SHOW ALL CUSTOMERS TOTAL AMOUNT CUSTOMERS WITH NO ORDER SHOULD BE 0
+
+select t1.name,COALESCE(sum(t2.amount),0) as total_amount from customers as t1
+
+left join
+
+orders as t2
+
+on
+
+t1.id=t2.customer_id
+
+group by t1.id,t1.name;
+
+
+
+find customers whose average order amount is greater than 5000
+
+select t1.name,avg(t2.amount) as avg_amount from customers as t1
+
+inner join
+
+orders as t2
+
+on t1.id=t2.customer_id
+
+group by t1.id
+
+Having avg(t2.amount)>5000;
+
+
+
+find top 2 customer based on their order amount
+
+select t1.name,sum(t2.amount) as total_amount from customer as t1
+
+inner join
+
+orders as t2
+
+on t1.id=t2.customer_id
+
+group by t1.id,t1.name
+
+order by sum(t2.amount) DESC
+
+limit 2;
