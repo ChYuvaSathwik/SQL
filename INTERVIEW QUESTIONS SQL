@@ -1,0 +1,286 @@
+1. A – Atomicity (All or Nothing)
+
+A transaction must happen completely or not at all.
+
+👉 Example:
+You transfer ₹1000 from A to B:
+
+Debit A (₹1000)
+Credit B (₹1000)
+
+If system crashes after debit but before credit → entire transaction is rolled back.
+
+✔ Either both steps happen
+✔ Or nothing happens
+
+2. C – Consistency (Valid Data Only)
+
+Database must always move from one valid state to another valid state.
+
+👉 Rules (constraints) must never break:
+
+Balance cannot become negative (if rule exists)
+Foreign key rules must be followed
+
+✔ Data always remains correct according to rules
+
+3. I – Isolation (No Interference)
+
+Multiple transactions running at the same time should not affect each other.
+
+👉 Example:
+Two users trying to book the last train ticket:
+
+Only one should succeed
+Other should not see half-updated data
+
+✔ Each transaction behaves like it is running alone
+
+4. D – Durability (Permanent after Save)
+
+Once a transaction is completed, the data is permanently saved.
+
+👉 Even if:
+
+Power fails
+System crashes
+
+✔ Data will still be there after restart
+
+🔥 Simple Memory Trick:
+
+A C I D
+
+A = All or nothing
+
+
+ACID Properties
+1. Atomicity (All or Nothing)
+🎤 Definition:
+
+"Atomicity ensures that a transaction is executed completely or not executed at all. If any part of the transaction fails, the entire transaction is rolled back."
+
+Example:
+Transferring ₹1000 from Account A to Account B.
+
+Debit from A ✅
+Credit to B ❌ (fails)
+
+➡️ Entire transaction is rolled back.
+
+2. Consistency (Valid State)
+🎤 Definition:
+
+"Consistency ensures that a transaction takes the database from one valid state to another valid state while maintaining all database rules and constraints."
+
+Example:
+After transferring money:
+
+Total balance remains correct.
+No foreign key or other constraint is violated.
+3. Isolation (No Interference)
+🎤 Definition:
+
+"Isolation ensures that multiple transactions executing at the same time do not interfere with each other. Each transaction behaves as if it is running independently."
+
+Example:
+Two users try to book the last seat.
+
+One transaction commits.
+The other waits, fails, or is rolled back.
+4. Durability (Permanent Save)
+🎤 Definition:
+
+"Durability ensures that once a transaction is committed, the changes are permanently saved in the database, even if the system crashes or power fails."
+
+Example:
+You transfer money successfully.
+Immediately after that, the server crashes.
+
+➡️ After restart, the transfer is still saved because it was already committed.
+
+🔥 One-line Memory Trick
+A – Atomicity: All or Nothing
+C – Consistency: Always follows database rules
+I – Isolation: Transactions don't interfere with each other
+D – Durability: Committed data is permanently stored
+C = Correct rules
+I = Independent execution
+D = Data saved forever
+
+
+"A Composite Key is a key formed by combining two or more columns to uniquely identify each record in a table."
+
+👉 A single column is not enough to identify a row uniquely, so we combine multiple columns.
+
+Example
+Student_Course
+student_id	course_id	grade
+101	C101	A
+101	C102	B
+102	C101	A
+
+Here,
+
+student_id ❌ is not unique (101 appears twice)
+course_id ❌ is not unique (C101 appears twice)
+
+But together:
+
+(student_id, course_id)
+
+becomes:
+
+student_id	course_id
+101	C101 ✅
+101	C102 ✅
+102	C101 ✅
+
+Every combination is unique.
+
+So,
+
+Composite Key = (student_id, course_id)
+
+2,Candidate Key
+"A Candidate Key is a column or combination of columns that can uniquely identify each record in a table. A table can have multiple candidate keys, and one of the
+m is selected as the Primary Key."
+Imagine you are a college principal.
+
+There are 3 ways to identify a student:
+
+Roll No	Email	Aadhaar
+101	a@gmail.com	1234
+102	b@gmail.com	5678
+103	c@gmail.com	9999
+
+Now I ask you:
+
+Can Roll No identify a student uniquely?
+
+✅ Yes.
+
+Can Email identify a student uniquely?
+
+✅ Yes.
+
+Can Aadhaar identify a student uniquely?
+
+✅ Yes.
+
+So there are 3 columns that can uniquely identify a student.
+
+These are called Candidate Keys.
+But the database needs only ONE Primary Key.
+
+Suppose we choose:
+
+Roll No
+
+Then:
+
+✅ Roll No → Primary Key
+✅ Email → Candidate Key (not chosen)
+✅ Aadhaar → Candidate Key (not chosen)
+
+
+2.unque key
+A Unique Key is a constraint that prevents duplicate values in a column. Unlike a Primary Key, it allows one NULL value in MySQL, and a table can have multiple Unique Keys."
+3.TRIGGER
+"A Trigger is a stored program in a database that automatically executes when a specific event like INSERT, UPDATE, or DELETE occurs on a table."
+
+
+4.data control language
+"DCL (Data Control Language) is used to control access to data in the database. It includes commands like GRANT to give permissions and REVOKE to remove permissions from users."
+22. What is a key in a database?
+
+A key is a column, or combination of columns, used to identify records uniquely or create relationships between tables.
+
+33. What is an alternate key?
+
+Candidate keys that are not chosen as the primary key are called alternate keys.
+
+
+39. What are common constraints?
+PRIMARY KEY
+FOREIGN KEY
+NOT NULL
+UNIQUE
+CHECK
+DEFAULT
+
+46. What is a relationship in a database?
+
+A relationship shows how data in one table is connected to data in another tabl
+
+
+52. What is a JOIN?
+
+A JOIN combines related data from two or more tables using a common column.
+
+53. Why do we use joins?
+
+Because related data is usually stored in separate tables to avoid duplication.
+3.CROSS JOIN
+"
+A CROSS JOIN returns the Cartesian product of two tables, where each row from the first table is combined with every row from the second table, resulting in all possible combinations."
+🔗 What is ON in JOIN?
+🎤 Interview Definition
+
+"The ON clause in a JOIN is used to specify the condition based on which two tables are matched and combined.
+83. What is a transaction?
+
+A transaction is a group of database operations treated as one unit of work.
+
+Example: bank transfer:
+
+Deduct money from Account A
+Add money to Account B
+
+Both should happen together.
+95. What is a stored procedure?
+
+A stored procedure is a saved set of SQL statements that can be executed when needed.
+What is a Function in MySQL?
+🎤 Interview Definition
+
+"A function in MySQL is a built-in or user-defined program that takes input, performs an operation, and returns a single value as output."
+9. What is a trigger?
+
+A trigger is a set of SQL statements that runs automatically when an event happens on a table.
+119. What is the difference between WHERE and HAVING?
+WHERE filters rows before grouping.
+HAVING filters groups after GROUP BY.
+121. What are aggregate functions?
+
+Functions that calculate one result from multiple rows.
+
+Examples:
+
+COUNT()
+SUM()
+AVG()
+MIN()
+MAX()
+128. What is a correlated subquery?
+
+A correlated subquery depends on the outer query and runs once for each outer row.
+
+131. What is UNION?
+
+UNION combines results of two queries and removes duplicates.
+
+132. What is UNION ALL?
+
+UNION ALL combines results and keeps duplicates.
+151. What is SQL injection?
+
+SQL injection is an attack where malicious SQL is inserted through user input to access, modify, or delete data.
+152. How do you prevent SQL injection?
+
+Use:
+
+Prepared statements / parameterized queries
+Input validation
+Least-privilege database users
+Avoid building SQL by directly concatenating user input
