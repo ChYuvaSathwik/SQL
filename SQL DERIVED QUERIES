@@ -1,0 +1,106 @@
+Employee Table
+Employee_ID	Name	Department	Salary
+101	John	IT	50000
+102	David	IT	40000
+103	Alice	HR	30000
+104	Mike	HR	50000
+105	Bob	Sales	60000
+106	Sam	Sales	50000
+107	Tom	Marketing	45000
+108	Jerry	Marketing	35000
+
+
+
+1. Display the average salary of each department
+SELECT *
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e;
+2. Display departments whose average salary is greater than 45000
+SELECT *
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.Average_Salary > 45000;
+3. Display only the department names whose average salary is greater than 45000
+SELECT Department
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.Average_Salary > 45000;
+4. Display departments whose average salary is greater than 45000, sorted in descending order of average salary
+SELECT *
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.Average_Salary > 45000
+ORDER BY e.Average_Salary DESC;
+5. Display the highest average salary among all departments
+SELECT MAX(e.avg_high_salary)
+FROM (
+    SELECT AVG(Salary) AS avg_high_salary
+    FROM Employee
+    GROUP BY Department
+) AS e;
+
+Output:
+
+MAX(avg_high_salary)
+55000
+6. Display the department having the highest average salary
+SELECT e.Department
+FROM (
+    SELECT Department,
+           AVG(Salary) AS avg_high_salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.avg_high_salary = (
+    SELECT MAX(avg_high_salary)
+    FROM (
+        SELECT Department,
+               AVG(Salary) AS avg_high_salary
+        FROM Employee
+        GROUP BY Department
+    ) AS d
+);
+
+Output:
+
+Department
+Sales
+7. Display the department and its average salary for the department having the highest average salary
+SELECT e.Department,
+       e.avg_high_salary
+FROM (
+    SELECT Department,
+           AVG(Salary) AS avg_high_salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.avg_high_salary = (
+    SELECT MAX(avg_high_salary)
+    FROM (
+        SELECT Department,
+               AVG(Salary) AS avg_high_salary
+        FROM Employee
+        GROUP BY Department
+    ) AS d
+);
+
+Output:
+
+Department	avg_high_salary
+Sales	55000
