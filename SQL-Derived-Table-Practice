@@ -1,0 +1,228 @@
+# SQL Derived Table Practice Questions
+
+## Employee Table
+
+| ID | Name  | Department | Salary |
+| -- | ----- | ---------- | ------ |
+| 1  | John  | IT         | 50000  |
+| 2  | Sam   | IT         | 60000  |
+| 3  | Alice | HR         | 40000  |
+| 4  | Bob   | HR         | 45000  |
+| 5  | David | Sales      | 70000  |
+| 6  | Tom   | Sales      | 50000  |
+
+---
+
+# 1. Display the departments whose average salary is greater than 50,000.
+
+Show only:
+
+* Department
+* Average Salary
+
+```sql
+SELECT Department, average_salary
+FROM (
+    SELECT Department,
+           AVG(Salary) AS average_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+WHERE d.average_salary > 50000;
+```
+
+---
+
+# 2. Display the department name and its average salary for all departments whose average salary is greater than 50,000. Sort the result by average salary in descending order.
+
+```sql
+SELECT Department, average_salary
+FROM (
+    SELECT Department,
+           AVG(Salary) AS average_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+WHERE d.average_salary > 50000
+ORDER BY average_salary DESC;
+```
+
+---
+
+# 3. Display the department name and the total salary paid in each department where the total salary is greater than 100000. Sort the result by total salary in descending order.
+
+```sql
+SELECT Department, total_salary
+FROM (
+    SELECT Department,
+           SUM(Salary) AS total_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+WHERE d.total_salary > 100000
+ORDER BY total_salary DESC;
+```
+
+---
+
+# 4. Display the department name and the number of employees in each department where the department has more than 2 employees. Sort the result by employee count in descending order.
+
+```sql
+SELECT Department, number_of_employees
+FROM (
+    SELECT Department,
+           COUNT(*) AS number_of_employees
+    FROM Employee
+    GROUP BY Department
+    HAVING COUNT(*) > 2
+) AS d
+ORDER BY number_of_employees DESC;
+```
+
+---
+
+# 5. Display the department name and the minimum salary in each department where the minimum salary is less than 45,000. Sort the result by minimum salary in ascending order.
+
+```sql
+SELECT Department, minimum_salary
+FROM (
+    SELECT Department,
+           MIN(Salary) AS minimum_salary
+    FROM Employee
+    GROUP BY Department
+    HAVING MIN(Salary) < 45000
+) AS d
+ORDER BY minimum_salary ASC;
+```
+
+---
+
+# 6. Display the complete details of the employee(s) who earn the highest salary in each department.
+
+```sql
+SELECT e.*
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           MAX(Salary) AS highest_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+AND e.Salary = d.highest_salary;
+```
+
+---
+
+# 7. Display the complete details of all employees whose salary is greater than the average salary of their own department.
+
+```sql
+SELECT e.*
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           AVG(Salary) AS average_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+AND e.Salary > d.average_salary;
+```
+
+---
+
+# 8. Display the complete details of all employees whose salary is equal to the minimum salary of their own department.
+
+```sql
+SELECT e.*
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           MIN(Salary) AS minimum_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+AND e.Salary = d.minimum_salary;
+```
+
+---
+
+# 9. Display the complete details of all employees whose salary is less than the average salary of their own department.
+
+```sql
+SELECT e.*
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           AVG(Salary) AS average_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+WHERE e.Salary < d.average_salary;
+```
+
+---
+
+# 10. Display the complete details of employees who work in departments having more than 2 employees.
+
+```sql
+SELECT e.*
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           COUNT(*) AS count_employee
+    FROM Employee
+    GROUP BY Department
+    HAVING COUNT(*) > 2
+) AS d
+ON e.Department = d.Department;
+```
+
+---
+
+# 11. Display the complete details of employees who work in departments whose total salary is greater than 120000.
+
+```sql
+SELECT e.*
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           SUM(Salary) AS total_salary
+    FROM Employee
+    GROUP BY Department
+    HAVING SUM(Salary) > 120000
+) AS d
+ON e.Department = d.Department;
+```
+
+---
+
+# 12. Display the complete details of employees who earn the highest salary in the company.
+
+```sql
+SELECT e.*
+FROM Employee AS e
+INNER JOIN (
+    SELECT MAX(Salary) AS max_salary
+    FROM Employee
+) AS d
+ON e.Salary = d.max_salary;
+```
+
+---
+
+# 13. Display the complete details of employees who earn the second highest salary in the company.
+
+```sql
+SELECT e.*
+FROM Employee AS e
+INNER JOIN (
+    SELECT DISTINCT Salary
+    FROM Employee
+    ORDER BY Salary DESC
+    LIMIT 1 OFFSET 1
+) AS d
+ON e.Salary = d.Salary;
+```
