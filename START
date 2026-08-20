@@ -1,0 +1,352 @@
+Single Subquery — SQL Practice
+Table: employees
+emp_id	name	department	salary	experience	city
+1	Arun	IT	60000	3	Hyderabad
+2	Priya	HR	50000	5	Chennai
+3	Rahul	IT	75000	6	Bangalore
+4	Sneha	Finance	65000	4	Hyderabad
+5	Kiran	HR	45000	2	Mumbai
+6	Anjali	IT	80000	8	Chennai
+7	Varun	Finance	55000	3	Mumbai
+8	Divya	IT	70000	5	Hyderabad
+9	Rohit	HR	60000	7	Bangalore
+10	Meena	Finance	90000	10	Chennai
+1. Find the employee(s) who earn the highest salary in the company.
+SELECT *
+FROM employees
+WHERE salary = (
+    SELECT MAX(salary)
+    FROM employees
+);
+2. Find all employees whose salary is greater than the average salary of all employees.
+SELECT *
+FROM employees
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employees
+);
+3. Find the employee(s) who have the same salary as Arun.
+SELECT *
+FROM employees
+WHERE salary = (
+    SELECT salary
+    FROM employees
+    WHERE name = 'Arun'
+);
+
+This also includes Arun because Arun has the same salary as himself.
+
+4. Find all employees who earn more than the highest-paid HR employee.
+SELECT *
+FROM employees
+WHERE salary > (
+    SELECT MAX(salary)
+    FROM employees
+    WHERE department = 'HR'
+);
+5. Find all employees whose experience is greater than the average experience of all employees.
+SELECT *
+FROM employees
+WHERE experience > (
+    SELECT AVG(experience)
+    FROM employees
+);
+6. Find the employee(s) who earn the lowest salary in the company.
+SELECT *
+FROM employees
+WHERE salary = (
+    SELECT MIN(salary)
+    FROM employees
+);
+7. Find all employees who earn more than the average salary of IT employees.
+SELECT *
+FROM employees
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employees
+    WHERE department = 'IT'
+);
+8. Find the department(s) whose total salary is greater than the total salary of the HR department.
+SELECT department, SUM(salary) AS total_salary
+FROM employees
+GROUP BY department
+HAVING SUM(salary) > (
+    SELECT SUM(salary)
+    FROM employees
+    WHERE department = 'HR'
+);
+9. Find the employee(s) whose salary is equal to the average salary of employees working in Hyderabad.
+SELECT *
+FROM employees
+WHERE salary = (
+    SELECT AVG(salary)
+    FROM employees
+    WHERE city = 'Hyderabad'
+);
+What you covered
+
+These 9 questions practice single subqueries using:
+
+MAX()
+MIN()
+AVG()
+SUM()
+WHERE with subquery
+HAVING with subquery
+Comparing a value with a subquery result
+Filtering the subquery with WHERE
+
+
+
+
+
+Multiple-Row Subqueries — SQL Practice
+Table 1: employees
+emp_id	name	department	salary	experience	city
+1	Arun	IT	60000	3	Hyderabad
+2	Priya	HR	50000	5	Chennai
+3	Rahul	IT	75000	6	Bangalore
+4	Sneha	Finance	65000	4	Hyderabad
+5	Kiran	HR	45000	2	Mumbai
+6	Anjali	IT	80000	8	Chennai
+7	Varun	Finance	55000	3	Mumbai
+8	Divya	IT	70000	5	Hyderabad
+9	Rohit	HR	60000	7	Bangalore
+10	Meena	Finance	90000	10	Chennai
+Table 2: department_list
+dept_name
+IT
+HR
+Finance
+Table 3: locations
+city_name
+Hyderabad
+Chennai
+1. Department exists in the department list
+
+Question:
+Find all employees who belong to a department that exists in the department_list table.
+
+SELECT *
+FROM employees
+WHERE department IN (
+    SELECT dept_name
+    FROM department_list
+);
+2. Department does not exist in the department list
+
+Question:
+Find all employees who do not belong to any department listed in the department_list table.
+
+SELECT *
+FROM employees
+WHERE department NOT IN (
+    SELECT dept_name
+    FROM department_list
+);
+3. City exists in the locations table
+
+Question:
+Find all employees who work in a city that is listed in the locations table.
+
+SELECT *
+FROM employees
+WHERE city IN (
+    SELECT city_name
+    FROM locations
+);
+4. Salary greater than ANY HR salary
+
+Question:
+Find all employees whose salary is greater than ANY salary of employees working in the HR department.
+
+SELECT *
+FROM employees
+WHERE salary > ANY (
+    SELECT salary
+    FROM employees
+    WHERE department = 'HR'
+);
+5. Salary greater than ALL HR salaries
+
+Question:
+Find all employees whose salary is greater than ALL salaries of employees working in the HR department.
+
+SELECT *
+FROM employees
+WHERE salary > ALL (
+    SELECT salary
+    FROM employees
+    WHERE department = 'HR'
+);
+6. Salary less than ANY IT salary
+
+Question:
+Find all employees whose salary is less than ANY salary of employees working in the IT department.
+
+SELECT *
+FROM employees
+WHERE salary < ANY (
+    SELECT salary
+    FROM employees
+    WHERE department = 'IT'
+);
+7. Salary less than ALL Finance salaries
+
+Question:
+Find all employees whose salary is less than ALL salaries of employees working in the Finance department.
+
+SELECT *
+FROM employees
+WHERE salary < ALL (
+    SELECT salary
+    FROM employees
+    WHERE department = 'Finance'
+);
+8. Departments listed in another table
+
+Question:
+Find all employees whose department is listed in the department_list table.
+
+SELECT *
+FROM employees
+WHERE department IN (
+    SELECT dept_name
+    FROM department_list
+);
+
+This is intentionally similar to Q1 but reinforces the IN multiple-row pattern. If you want 10 truly different questions, we should replace this one.
+
+9. City is not listed in the locations table
+
+Question:
+Find all employees whose city is not one of the cities listed in the locations table.
+
+SELECT *
+FROM employees
+WHERE city NOT IN (
+    SELECT city_name
+    FROM locations
+);
+10. Experience greater than ANY HR experience
+
+Question:
+Find all employees whose experience is greater than ANY experience of employees working in the HR department.
+
+SELECT *
+FROM employees
+WHERE experience > ANY (
+    SELECT experience
+    FROM employees
+    WHERE department = 'HR'
+);
+Multiple-Row Subquery operators covered
+Operator	Meaning
+IN	Matches any value in the returned list
+NOT IN	Does not match any value in the returned list
+ANY	Condition is true for at least one returned value
+ALL	Condition is true for every returned value
+
+
+
+
+Multiple-Column Subqueries — SQL Practice
+Table: employees
+emp_id	name	department	salary	experience	city
+1	Arun	IT	60000	3	Hyderabad
+2	Priya	HR	50000	5	Chennai
+3	Rahul	IT	75000	6	Bangalore
+4	Sneha	Finance	65000	4	Hyderabad
+5	Kiran	HR	45000	2	Mumbai
+6	Anjali	IT	80000	8	Chennai
+7	Varun	Finance	55000	3	Mumbai
+8	Divya	IT	70000	5	Hyderabad
+9	Rohit	HR	60000	7	Bangalore
+10	Meena	Finance	90000	10	Chennai
+11	Ajay	Sales	55000	4	Hyderabad
+12	Neha	Sales	65000	6	Chennai
+Table: employee_targets
+department	salary
+IT	60000
+IT	75000
+HR	50000
+Finance	65000
+Table: employee_locations
+city	department
+Hyderabad	IT
+Chennai	HR
+Mumbai	Finance
+Bangalore	IT
+Questions & Queries
+1. Find all employees whose department and salary match a record in the employee_targets table.
+SELECT *
+FROM employees
+WHERE (department, salary) IN (
+    SELECT department, salary
+    FROM employee_targets
+);
+2. Find all employees whose city and department match a record in the employee_locations table.
+SELECT *
+FROM employees
+WHERE (city, department) IN (
+    SELECT city, department
+    FROM employee_locations
+);
+3. Find all employees whose department and salary match the department and salary of Arun.
+SELECT *
+FROM employees
+WHERE (department, salary) IN (
+    SELECT department, salary
+    FROM employees
+    WHERE name = 'Arun'
+);
+4. Find all employees whose department and salary match the department and salary of Rahul.
+SELECT *
+FROM employees
+WHERE (department, salary) IN (
+    SELECT department, salary
+    FROM employees
+    WHERE name = 'Rahul'
+);
+5. Find all employees whose city and department match the city and department of Sneha.
+SELECT *
+FROM employees
+WHERE (city, department) IN (
+    SELECT city, department
+    FROM employees
+    WHERE name = 'Sneha'
+);
+6. Find all employees whose city and department match the city and department of employees earning more than 70000.
+SELECT *
+FROM employees
+WHERE (city, department) IN (
+    SELECT city, department
+    FROM employees
+    WHERE salary > 70000
+);
+7. Find all employees who have the highest salary in their respective department.
+SELECT *
+FROM employees
+WHERE (department, salary) IN (
+    SELECT department, MAX(salary)
+    FROM employees
+    GROUP BY department
+);
+Concepts covered
+Multiple-column IN
+Multiple-column comparison
+GROUP BY
+MAX()
+Filtering inside subqueries
+Comparing multiple columns together
+Subquery using another table
+Subquery using the same table
+
+
+
+
+
+
+
+
+All 9 are single-subquery questions.
