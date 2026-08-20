@@ -346,6 +346,218 @@ Subquery using the same table
 
 
 
+SQL Derived Table Practice
+Employee Table
+ID	Name	Department	Salary
+1	John	IT	50000
+2	Sam	IT	60000
+3	Alice	HR	40000
+4	Bob	HR	45000
+5	David	Sales	70000
+6	Tom	Sales	50000
+1. Departments with average salary greater than 50,000
+
+Question:
+Display the departments whose average salary is greater than 50,000.
+
+Show only:
+
+Department
+Average Salary
+SELECT Department, avg_salary
+FROM (
+    SELECT Department,
+           AVG(Salary) AS avg_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+WHERE d.avg_salary > 50000;
+2. Departments with average salary greater than 50,000, sorted
+
+Question:
+Display the department name and its average salary for all departments whose average salary is greater than 50,000.
+
+Sort the result by average salary in descending order.
+
+SELECT Department, avg_salary
+FROM (
+    SELECT Department,
+           AVG(Salary) AS avg_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+WHERE d.avg_salary > 50000
+ORDER BY avg_salary DESC;
+3. Departments with total salary greater than 100,000
+
+Question:
+Display the department name and the total salary paid in each department where the total salary is greater than 100,000.
+
+Sort the result by total salary in descending order.
+
+SELECT Department, total_salary
+FROM (
+    SELECT Department,
+           SUM(Salary) AS total_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+WHERE d.total_salary > 100000
+ORDER BY d.total_salary DESC;
+4. Departments having more than 2 employees
+
+Question:
+Display the department name and the number of employees in each department where the department has more than 2 employees.
+
+Sort the result by employee count in descending order.
+
+SELECT Department, employee_count
+FROM (
+    SELECT Department,
+           COUNT(*) AS employee_count
+    FROM Employee
+    GROUP BY Department
+) AS d
+WHERE d.employee_count > 2
+ORDER BY d.employee_count DESC;
+
+Note: With the current 6-row table, no department has more than 2 employees, but the query is still valid practice.
+
+5. Departments with minimum salary below 45,000
+
+Question:
+Display the department name and the minimum salary in each department where the minimum salary is less than 45,000.
+
+Sort the result by minimum salary in ascending order.
+
+SELECT Department, min_salary
+FROM (
+    SELECT Department,
+           MIN(Salary) AS min_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+WHERE d.min_salary < 45000
+ORDER BY d.min_salary ASC;
+6. Employees earning the highest salary in each department
+
+Question:
+Display the complete details of the employee(s) who earn the highest salary in each department.
+
+SELECT *
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           MAX(Salary) AS max_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+AND e.Salary = d.max_salary;
+Pattern
+Department-wise MAX()
+        ↓
+Derived table
+        ↓
+JOIN with Employee
+        ↓
+Get complete employee details
+7. Employees earning above their department average
+
+Question:
+Display the complete details of all employees whose salary is greater than the average salary of their own department.
+
+SELECT *
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           AVG(Salary) AS avg_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+WHERE e.Salary > d.avg_salary;
+8. Employees earning the minimum salary in their department
+
+Question:
+Display the complete details of all employees whose salary is equal to the minimum salary of their own department.
+
+SELECT *
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           MIN(Salary) AS min_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+WHERE e.Salary = d.min_salary;
+9. Employees earning below their department average
+
+Question:
+Display the complete details of all employees whose salary is less than the average salary of their own department.
+
+SELECT *
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           AVG(Salary) AS avg_salary
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+WHERE e.Salary < d.avg_salary;
+10. Employees working in departments having more than 2 employees
+
+Question:
+Display the complete details of employees who work in departments having more than 2 employees.
+
+SELECT *
+FROM Employee AS e
+INNER JOIN (
+    SELECT Department,
+           COUNT(*) AS employee_count
+    FROM Employee
+    GROUP BY Department
+) AS d
+ON e.Department = d.Department
+WHERE d.employee_count > 2;
+11. Employees earning the highest salary in the company
+
+Question:
+Display the complete details of employees who earn the highest salary in the company.
+
+SELECT *
+FROM Employee AS e
+INNER JOIN (
+    SELECT MAX(Salary) AS max_salary
+    FROM Employee
+) AS d
+ON e.Salary = d.max_salary;
+Important
+
+Here we don't need GROUP BY because we want the highest salary for the entire company, not for each department.
+
+12. Employees earning the second-highest salary
+
+Question:
+Display the complete details of employees who earn the second-highest salary in the company.
+
+SELECT *
+FROM Employee AS e
+INNER JOIN (
+    SELECT MAX(Salary) AS second_highest
+    FROM Employee
+    WHERE Salary < (
+        SELECT MAX(Salary)
+        FROM Employee
+    )
+) AS d
+ON e.Salary = d.second_highest;
+
+
+
+
 
 
 
