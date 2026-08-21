@@ -558,7 +558,185 @@ ON e.Salary = d.second_highest;
 
 
 
+DERIVED QUERIES AND JOIN
 
 
 
-All 9 are single-subquery questions.
+Employee Table
+Employee_ID	Name	Department	Salary
+101	John	IT	50000
+102	David	IT	40000
+103	Alice	HR	30000
+104	Mike	HR	50000
+105	Bob	Sales	60000
+106	Sam	Sales	50000
+107	Tom	Marketing	45000
+108	Jerry	Marketing	35000
+1. Display the average salary of each department.
+SELECT *
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e;
+2. Display departments whose average salary is greater than 45000.
+SELECT *
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.Average_Salary > 45000;
+3. Display only the department names whose average salary is greater than 45000.
+SELECT Department
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.Average_Salary > 45000;
+4. Display departments whose average salary is greater than 45000, sorted in descending order of average salary.
+SELECT *
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.Average_Salary > 45000
+ORDER BY e.Average_Salary DESC;
+5. Display the highest average salary among all departments.
+Derived Table Approach
+SELECT MAX(e.Average_Salary) AS Highest_Average_Salary
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e;
+
+Output:
+
+Highest_Average_Salary
+----------------------
+55000
+6. Display the department having the highest average salary.
+Approach 1 — Without JOIN
+SELECT e.Department
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.Average_Salary = (
+    SELECT MAX(d.Average_Salary)
+    FROM (
+        SELECT Department,
+               AVG(Salary) AS Average_Salary
+        FROM Employee
+        GROUP BY Department
+    ) AS d
+);
+
+Output:
+
+Department
+----------
+Sales
+Approach 2 — With JOIN
+SELECT e.Department
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+INNER JOIN (
+    SELECT MAX(d.Average_Salary) AS Highest_Average
+    FROM (
+        SELECT Department,
+               AVG(Salary) AS Average_Salary
+        FROM Employee
+        GROUP BY Department
+    ) AS d
+) AS h
+ON e.Average_Salary = h.Highest_Average;
+
+Output:
+
+Department
+----------
+Sales
+7. Display the department and its average salary for the department having the highest average salary.
+Approach 1 — Without JOIN
+SELECT e.Department,
+       e.Average_Salary
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+WHERE e.Average_Salary = (
+    SELECT MAX(d.Average_Salary)
+    FROM (
+        SELECT Department,
+               AVG(Salary) AS Average_Salary
+        FROM Employee
+        GROUP BY Department
+    ) AS d
+);
+
+Output:
+
+Department | Average_Salary
+-----------|---------------
+Sales      | 55000
+Approach 2 — With JOIN
+SELECT e.Department,
+       e.Average_Salary
+FROM (
+    SELECT Department,
+           AVG(Salary) AS Average_Salary
+    FROM Employee
+    GROUP BY Department
+) AS e
+INNER JOIN (
+    SELECT MAX(d.Average_Salary) AS Highest_Average
+    FROM (
+        SELECT Department,
+               AVG(Salary) AS Average_Salary
+        FROM Employee
+        GROUP BY Department
+    ) AS d
+) AS h
+ON e.Average_Salary = h.Highest_Average;
+
+Output:
+
+Department | Average_Salary
+-----------|---------------
+Sales      | 55000
+🔥 Your GitHub learning structure
+1. AVG + GROUP BY
+2. Derived Table + WHERE
+3. Derived Table + SELECT specific column
+4. Derived Table + ORDER BY
+5. MAX of derived-table result
+6. MAX + Derived Table → Department
+   ├── Without JOIN
+   └── With JOIN
+7. MAX + Derived Table → Department + Average
+   ├── Without JOIN
+   └── With JOIN
+
+
+
+
+
+
+
