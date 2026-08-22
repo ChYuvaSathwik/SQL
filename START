@@ -740,3 +740,156 @@ Sales      | 55000
 
 
 
+ Employee table
+Employee_ID	Name	Department	Salary
+101	John	IT	50000
+102	David	IT	40000
+103	Alice	HR	30000
+104	Mike	HR	50000
+105	Bob	Sales	60000
+106	Sam	Sales	50000
+107	Tom	Marketing	45000
+108	Jerry	Marketing	35000
+109	Steve	IT	70000
+110	Emma	HR	60000
+Question 4
+
+Display the department and its total salary for the department having the lowest total salary.
+
+SELECT t.department, t.total_salary
+FROM (
+    SELECT t.department,
+           SUM(t.salary) AS total_salary
+    FROM employees AS t
+    GROUP BY t.department
+) AS t
+WHERE t.total_salary = (
+    SELECT MIN(d.total_salary)
+    FROM (
+        SELECT d.department,
+               SUM(d.salary) AS total_salary
+        FROM employees AS d
+        GROUP BY d.department
+    ) AS d
+);
+Question 5
+
+Display the department that has the highest number of employees.
+
+SELECT t.department, t.employee_count
+FROM (
+    SELECT t.department,
+           COUNT(*) AS employee_count
+    FROM employees AS t
+    GROUP BY t.department
+) AS t
+WHERE t.employee_count = (
+    SELECT MAX(d.employee_count)
+    FROM (
+        SELECT d.department,
+               COUNT(*) AS employee_count
+        FROM employees AS d
+        GROUP BY d.department
+    ) AS d
+);
+
+Note: With our data, IT and HR both have 3 employees, so both are returned.
+
+Question 6
+
+Display the departments whose average salary is greater than the average salary of all employees.
+
+SELECT t.department, t.avg_salary
+FROM (
+    SELECT t.department,
+           AVG(t.salary) AS avg_salary
+    FROM employees AS t
+    GROUP BY t.department
+) AS t
+WHERE t.avg_salary > (
+    SELECT AVG(d.salary)
+    FROM employees AS d
+);
+Question 7
+
+Display the departments that have more employees than the department with the lowest number of employees.
+
+SELECT t.department, t.employee_count
+FROM (
+    SELECT t.department,
+           COUNT(*) AS employee_count
+    FROM employees AS t
+    GROUP BY t.department
+) AS t
+WHERE t.employee_count > (
+    SELECT MIN(d.employee_count)
+    FROM (
+        SELECT d.department,
+               COUNT(*) AS employee_count
+        FROM employees AS d
+        GROUP BY d.department
+    ) AS d
+);
+Question 8
+
+Display the departments where the highest salary in that department is equal to the highest salary among all employees.
+
+SELECT t.department, t.high_salary
+FROM (
+    SELECT t.department,
+           MAX(t.salary) AS high_salary
+    FROM employees AS t
+    GROUP BY t.department
+) AS t
+WHERE t.high_salary = (
+    SELECT MAX(d.high_salary)
+    FROM (
+        SELECT MAX(d.salary) AS high_salary
+        FROM employees AS d
+    ) AS d
+);
+One important thing about Question 8
+
+Your thinking was:
+
+MAX salary per department
+        ↓
+IT       70000
+HR       60000
+Sales    60000
+Marketing 45000
+
+        ↓
+
+Overall MAX salary
+        ↓
+70000
+
+        ↓
+
+Compare EVERY department MAX with 70000
+
+Exactly. If two departments had 70000, both would be returned. ✅
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
