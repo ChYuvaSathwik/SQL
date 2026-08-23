@@ -872,6 +872,235 @@ Compare EVERY department MAX with 70000
 Exactly. If two departments had 70000, both would be returned. ✅
 
 
+Tables
+
+departments
+
+department_id	department_name
+1	CSE
+2	ECE
+3	IT
+4	HR
+
+employees
+
+employee_id	employee_name	department_id	salary
+101	Ravi	1	70000
+102	Arun	1	60000
+103	Kiran	1	50000
+104	Priya	2	65000
+105	Sneha	2	55000
+106	Rahul	3	80000
+107	Ajay	3	70000
+108	Meena	4	45000
+109	Anil	4	40000
+Q1
+
+Display the department name and the lowest salary in each department.
+
+SELECT d.department_name, e.lowest_salary
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           MIN(salary) AS lowest_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id;
+Q2
+
+Display the department name and the employee count for the department having the lowest total salary.
+
+SELECT d.department_name, e.employee_count
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           COUNT(*) AS employee_count,
+           SUM(salary) AS total_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.total_salary = (
+    SELECT MIN(x.total_salary)
+    FROM (
+        SELECT department_id,
+               SUM(salary) AS total_salary
+        FROM employees
+        GROUP BY department_id
+    ) AS x
+);
+Q3
+
+Display the department name and average salary for departments where the highest salary is greater than 60,000.
+
+SELECT d.department_name, e.avg_salary
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           AVG(salary) AS avg_salary,
+           MAX(salary) AS highest_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.highest_salary > 60000;
+Q4
+
+Display the department name and total salary for the department having the highest employee count.
+
+SELECT d.department_name, e.total_salary
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           COUNT(*) AS employee_count,
+           SUM(salary) AS total_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.employee_count = (
+    SELECT MAX(x.employee_count)
+    FROM (
+        SELECT department_id,
+               COUNT(*) AS employee_count
+        FROM employees
+        GROUP BY department_id
+    ) AS x
+);
+Q5
+
+Display the department name and highest salary for departments whose employee count is greater than the average employee count per department.
+
+SELECT d.department_name, e.highest_salary
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           COUNT(*) AS employee_count,
+           MAX(salary) AS highest_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.employee_count > (
+    SELECT AVG(x.employee_count)
+    FROM (
+        SELECT department_id,
+               COUNT(*) AS employee_count
+        FROM employees
+        GROUP BY department_id
+    ) AS x
+);
+Q6
+
+Display the department name and employee count for departments whose total salary is less than the average total salary of all departments.
+
+SELECT d.department_name, e.employee_count
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           COUNT(*) AS employee_count,
+           SUM(salary) AS total_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.total_salary < (
+    SELECT AVG(x.total_salary)
+    FROM (
+        SELECT department_id,
+               SUM(salary) AS total_salary
+        FROM employees
+        GROUP BY department_id
+    ) AS x
+);
+Q7
+
+Display the department name and total salary for departments whose highest salary is greater than the average salary of all employees.
+
+SELECT d.department_name, e.total_salary
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           SUM(salary) AS total_salary,
+           MAX(salary) AS highest_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.highest_salary > (
+    SELECT AVG(salary)
+    FROM employees
+);
+Q8
+
+Display the department name and lowest salary for the department having the highest average salary.
+
+SELECT d.department_name, e.lowest_salary
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           AVG(salary) AS avg_salary,
+           MIN(salary) AS lowest_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.avg_salary = (
+    SELECT MAX(x.avg_salary)
+    FROM (
+        SELECT department_id,
+               AVG(salary) AS avg_salary
+        FROM employees
+        GROUP BY department_id
+    ) AS x
+);
+Q9
+
+Display the department name and average salary for the department having the highest total salary.
+
+SELECT d.department_name, e.avg_salary
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           SUM(salary) AS total_salary,
+           AVG(salary) AS avg_salary
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.total_salary = (
+    SELECT MAX(x.total_salary)
+    FROM (
+        SELECT department_id,
+               SUM(salary) AS total_salary
+        FROM employees
+        GROUP BY department_id
+    ) AS x
+);
+Q10
+
+Display the department name and employee count for departments whose average salary is greater than the average salary of all departments.
+
+SELECT d.department_name, e.employee_count
+FROM departments AS d
+INNER JOIN (
+    SELECT department_id,
+           AVG(salary) AS avg_salary,
+           COUNT(*) AS employee_count
+    FROM employees
+    GROUP BY department_id
+) AS e
+ON d.department_id = e.department_id
+WHERE e.avg_salary > (
+    SELECT AVG(x.avg_salary)
+    FROM (
+        SELECT department_id,
+               AVG(salary) AS avg_salary
+        FROM employees
+        GROUP BY department_id
+    ) AS x
+);
 
 
 
