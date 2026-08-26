@@ -11,94 +11,129 @@ ID	Name	Department	Salary
 9	Kevin	Finance	80000
 10	Sophia	Finance	75000
 11	Liam	Finance	75000
-1. Display the complete details of the employee(s) who earn the highest salary in each department.
+1. Highest Salary in Each Department
+
+Question:
+Display the complete details of the employee(s) who earn the highest salary in each department.
+
 SELECT *
 FROM (
     SELECT *,
-           ROW_NUMBER() OVER (
+           DENSE_RANK() OVER(
                PARTITION BY Department
                ORDER BY Salary DESC
-           ) AS ranks
-    FROM Employee
+           ) AS salary_rank
+    FROM Employees
 ) AS d
-WHERE d.ranks = 1;
-2. Display the complete details of the employee(s) who earn the second highest salary in each department.
+WHERE salary_rank = 1;
+2. Second-Highest Salary in Each Department
+
+Question:
+Display the complete details of the employee(s) who earn the second-highest salary in each department.
+
 SELECT *
 FROM (
     SELECT *,
-           DENSE_RANK() OVER (
+           DENSE_RANK() OVER(
                PARTITION BY Department
                ORDER BY Salary DESC
-           ) AS ranks
-    FROM Employee
+           ) AS salary_rank
+    FROM Employees
 ) AS d
-WHERE d.ranks = 2;
-3. Display the complete details of the top 2 highest-paid employees in each department.
-SELECT *
+WHERE salary_rank = 2;
+3. Top 2 Highest-Paid Employees in Each Department
+
+Question:
+Display the complete details of the top 2 highest-paid employees in each department.
+
+SELECT ID, Name, Department, Salary
 FROM (
     SELECT *,
-           ROW_NUMBER() OVER (
+           ROW_NUMBER() OVER(
                PARTITION BY Department
                ORDER BY Salary DESC
-           ) AS rn
-    FROM Employee
+           ) AS row_num
+    FROM Employees
 ) AS d
-WHERE rn IN (1, 2);
-4. Display every employee along with their salary rank within their department.
+WHERE row_num <= 2;
+4. Salary Rank Within Each Department
+
+Question:
+Display every employee along with their salary rank within their department.
 
 If two employees have the same salary, they should receive the same rank, and the next rank should skip accordingly.
 
 SELECT *
 FROM (
     SELECT *,
-           RANK() OVER (
+           RANK() OVER(
                PARTITION BY Department
                ORDER BY Salary DESC
-           ) AS rank
-    FROM Employee
+           ) AS salary_rank
+    FROM Employees
 ) AS d;
-5. Display every employee along with their dense salary rank within their department.
+5. Dense Salary Rank Within Each Department
+
+Question:
+Display every employee along with their dense salary rank within their department.
 
 If two employees have the same salary, they should receive the same rank, but no ranks should be skipped.
 
 SELECT *
 FROM (
     SELECT *,
-           DENSE_RANK() OVER (
+           DENSE_RANK() OVER(
                PARTITION BY Department
                ORDER BY Salary DESC
-           ) AS rank
-    FROM Employee
+           ) AS salary_rank
+    FROM Employees
 ) AS d;
-6. Display every employee along with a unique row number within their department based on salary in descending order.
+6. Unique Row Number Within Each Department
+
+Question:
+Display every employee along with a unique row number within their department based on salary in descending order.
+
 SELECT *
 FROM (
     SELECT *,
-           ROW_NUMBER() OVER (
+           ROW_NUMBER() OVER(
                PARTITION BY Department
                ORDER BY Salary DESC
            ) AS row_num
-    FROM Employee
+    FROM Employees
 ) AS d;
-7. Display the employees whose dense rank is 2 in their department.
+7. Employees With Dense Rank 2
+
+Question:
+Display the employees whose dense rank is 2 in their department.
+
 SELECT *
 FROM (
     SELECT *,
-           DENSE_RANK() OVER (
+           DENSE_RANK() OVER(
                PARTITION BY Department
                ORDER BY Salary DESC
-           ) AS rank
-    FROM Employee
+           ) AS salary_rank
+    FROM Employees
 ) AS d
-WHERE rank = 2;
-8. Display the employees whose row number is 1 in their department.
+WHERE salary_rank = 2;
+8. Employees With Row Number 1
+
+Question:
+Display the employees whose row number is 1 in their department.
+
 SELECT *
 FROM (
     SELECT *,
-           ROW_NUMBER() OVER (
+           ROW_NUMBER() OVER(
                PARTITION BY Department
                ORDER BY Salary DESC
            ) AS row_num
-    FROM Employee
+    FROM Employees
 ) AS d
 WHERE row_num = 1;
+Quick Reference
+Function	Same Salary	Next Rank
+RANK()	Same rank	Skips
+DENSE_RANK()	Same rank	No skip
+ROW_NUMBER()	Unique number	No concept of ties
