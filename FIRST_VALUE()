@@ -1,0 +1,264 @@
+# FIRST_VALUE() — SQL Window Function
+
+## Employee Table
+
+| ID | Name  | Department | Salary |
+| -: | ----- | ---------- | -----: |
+|  1 | John  | IT         |  50000 |
+|  2 | Sam   | IT         |  60000 |
+|  3 | Mike  | IT         |  70000 |
+|  4 | Alice | HR         |  40000 |
+|  5 | Bob   | HR         |  45000 |
+|  6 | David | Sales      |  70000 |
+|  7 | Tom   | Sales      |  50000 |
+|  8 | Emma  | Sales      |  80000 |
+
+---
+
+## What is FIRST_VALUE()?
+
+`FIRST_VALUE()` returns the value from the **first row of the window according to the `ORDER BY`**.
+
+### Basic syntax
+
+```sql
+FIRST_VALUE(column_name) OVER (
+    PARTITION BY column_name
+    ORDER BY column_name
+)
+```
+
+### Important idea
+
+```text
+ORDER BY Salary ASC
+    → first row = lowest salary
+
+ORDER BY Salary DESC
+    → first row = highest salary
+```
+
+`PARTITION BY Department` makes the calculation happen separately for each department.
+
+---
+
+# Question 1
+
+### Display every employee along with the name of the lowest-paid employee in their department.
+
+```sql
+SELECT *,
+       FIRST_VALUE(Name) OVER(
+           PARTITION BY Department
+           ORDER BY Salary
+       ) AS lowest_paid_employee_name
+FROM Employees;
+```
+
+### Logic
+
+```text
+PARTITION BY Department
+→ separate departments
+
+ORDER BY Salary
+→ lowest salary comes first
+
+FIRST_VALUE(Name)
+→ return the name of that first employee
+```
+
+---
+
+# Question 2
+
+### Display every employee along with the name of the highest-paid employee in their department.
+
+```sql
+SELECT *,
+       FIRST_VALUE(Name) OVER(
+           PARTITION BY Department
+           ORDER BY Salary DESC
+       ) AS highest_paid_employee_name
+FROM Employees;
+```
+
+### Logic
+
+```text
+ORDER BY Salary DESC
+→ highest salary comes first
+
+FIRST_VALUE(Name)
+→ return the name of that employee
+```
+
+---
+
+# Question 3
+
+### Display every employee along with the name of the highest-paid employee in their department, and order the final result by employee ID.
+
+```sql
+SELECT *,
+       FIRST_VALUE(Name) OVER(
+           PARTITION BY Department
+           ORDER BY Salary DESC
+       ) AS highest_paid_employee_name
+FROM Employees
+ORDER BY ID;
+```
+
+### Important distinction
+
+There are two different `ORDER BY` clauses.
+
+```sql
+ORDER BY Salary DESC
+```
+
+inside `OVER()`:
+
+→ controls which employee is considered the first employee.
+
+```sql
+ORDER BY ID
+```
+
+outside `OVER()`:
+
+→ controls the order in which the final result is displayed.
+
+---
+
+# Question 4
+
+### Display every employee along with the name of the highest-paid employee in their department.
+
+```sql
+SELECT *,
+       FIRST_VALUE(Name) OVER(
+           PARTITION BY Department
+           ORDER BY Salary DESC
+       ) AS employee_name_highest_salary
+FROM Employees;
+```
+
+---
+
+# Question 5
+
+### Display every employee along with the name of the lowest-paid employee in their department.
+
+```sql
+SELECT *,
+       FIRST_VALUE(Name) OVER(
+           PARTITION BY Department
+           ORDER BY Salary
+       ) AS employee_name_lowest_salary
+FROM Employees;
+```
+
+---
+
+# Question 6
+
+### Display every employee along with the name of the highest-paid employee in their department and the highest salary in their department.
+
+```sql
+SELECT *,
+       FIRST_VALUE(Name) OVER(
+           PARTITION BY Department
+           ORDER BY Salary DESC
+       ) AS highest_paid_employee,
+
+       FIRST_VALUE(Salary) OVER(
+           PARTITION BY Department
+           ORDER BY Salary DESC
+       ) AS highest_salary
+FROM Employees;
+```
+
+---
+
+# Key Difference: MIN() vs FIRST_VALUE()
+
+These can sometimes produce the same result:
+
+```sql
+MIN(Salary) OVER(
+    PARTITION BY Department
+)
+```
+
+and:
+
+```sql
+FIRST_VALUE(Salary) OVER(
+    PARTITION BY Department
+    ORDER BY Salary
+)
+```
+
+Both can give the lowest salary.
+
+But `FIRST_VALUE()` becomes more useful when we want a value from the **row associated with the first salary**.
+
+For example:
+
+```sql
+FIRST_VALUE(Name) OVER(
+    PARTITION BY Department
+    ORDER BY Salary
+)
+```
+
+This gives the **name of the employee with the lowest salary**.
+
+`MIN(Name)` would instead find the alphabetically smallest name, which is a completely different operation.
+
+---
+
+# FIRST_VALUE() Cheat Sheet
+
+```text
+FIRST_VALUE(column)
+        ↓
+Take the value from the first row
+        ↓
+according to ORDER BY
+```
+
+### Lowest-paid employee
+
+```sql
+FIRST_VALUE(Name) OVER(
+    PARTITION BY Department
+    ORDER BY Salary ASC
+)
+```
+
+### Highest-paid employee
+
+```sql
+FIRST_VALUE(Name) OVER(
+    PARTITION BY Department
+    ORDER BY Salary DESC
+)
+```
+
+### Core concept
+
+```text
+PARTITION BY
+    ↓
+Which group?
+
+ORDER BY
+    ↓
+Which row is first?
+
+FIRST_VALUE()
+    ↓
+Which column's value should I take from that first row?
+```
