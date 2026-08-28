@@ -1,0 +1,251 @@
+SQL Window Functions — LAG & LEAD
+Employee Table
+ID	Name	Department	Salary
+1	John	IT	50000
+2	Sam	IT	60000
+3	Mike	IT	65000
+4	Alice	HR	40000
+5	Bob	HR	45000
+6	David	HR	50000
+7	Tom	Sales	50000
+8	Emma	Sales	60000
+9	Kevin	Sales	70000
+Q1 — Previous Salary using LAG()
+Question
+
+Display every employee along with the salary of the previous employee, ordered by salary from lowest to highest within each department.
+
+Query
+SELECT *,
+       LAG(salary) OVER(
+           PARTITION BY department
+           ORDER BY salary
+       ) AS previous_salary
+FROM employees;
+Concept
+LAG() → previous row
+Q2 — Next Salary using LEAD()
+Question
+
+Display every employee along with the salary of the next employee, ordered by salary from lowest to highest within each department.
+
+Query
+SELECT *,
+       LEAD(salary) OVER(
+           PARTITION BY department
+           ORDER BY salary
+       ) AS next_employee_salary
+FROM employees;
+Concept
+LEAD() → next row
+Q3 — Previous Salary + Difference
+Question
+
+Display every employee along with their previous salary and the difference between their current salary and previous salary, ordered by salary from lowest to highest within each department.
+
+Approach 1 — Write LAG() twice
+SELECT *,
+       LAG(salary) OVER(
+           PARTITION BY department
+           ORDER BY salary
+       ) AS previous_salary,
+
+       salary - LAG(salary) OVER(
+           PARTITION BY department
+           ORDER BY salary
+       ) AS diff_salary
+
+FROM employees;
+Approach 2 — Derived Table ⭐
+
+We practiced this because it avoids calculating LAG() twice.
+
+SELECT *,
+       salary - previous_salary AS diff_salary
+FROM (
+    SELECT *,
+           LAG(salary) OVER(
+               PARTITION BY department
+               ORDER BY salary
+           ) AS previous_salary
+    FROM employees
+) AS d1;
+Important idea
+
+The inner query creates:
+
+previous_salary
+
+Then the outer query can use it:
+
+salary - previous_salary
+Q4 — Next Salary + Difference
+Question
+
+Display every employee along with their next salary and the difference between their next salary and current salary, ordered by salary from lowest to highest within each department.
+
+Query
+SELECT *,
+       next_salary - salary AS diff_salary
+FROM (
+    SELECT *,
+           LEAD(salary) OVER(
+               PARTITION BY department
+               ORDER BY salary
+           ) AS next_salary
+    FROM employees
+) AS d1;
+Concept
+LEAD() → next salary
+next salary - current salary → difference
+Q5 — Immediately Previous Employee
+Question
+
+Display every employee along with the salary of the employee who comes immediately before them in salary order within their department.
+
+Query
+SELECT *,
+       LAG(salary) OVER(
+           PARTITION BY department
+           ORDER BY salary
+       ) AS previous_salary
+FROM employees;
+Key wording
+"immediately before"
+        ↓
+      LAG()
+Q6 — Immediately Next Employee
+Question
+
+Display every employee along with the salary of the employee who comes immediately after them in salary order within their department.
+
+Query
+SELECT *,
+       LEAD(salary) OVER(
+           PARTITION BY department
+           ORDER BY salary
+       ) AS next_salary
+FROM employees;
+Key wording
+"immediately after"
+        ↓
+      LEAD()
+Q7 — Previous + Next Salary
+Question
+
+Display every employee along with their previous salary and next salary within their department, ordered by salary from lowest to highest.
+
+Query
+SELECT *,
+       LAG(salary) OVER(
+           PARTITION BY department
+           ORDER BY salary
+       ) AS previous_salary,
+
+       LEAD(salary) OVER(
+           PARTITION BY department
+           ORDER BY salary
+       ) AS next_salary
+
+FROM employees;
+Concept
+             Current
+                ↓
+Previous ← Employee → Next
+  LAG                 LEAD
+Q8 — Percentage Change from Previous Salary
+Question
+
+Display each employee along with the percentage change in salary compared with the previous employee in their department, ordered by salary from lowest to highest.
+
+Percentage formula
+(Current Salary - Previous Salary)
+---------------------------------- × 100
+        Previous Salary
+
+For example:
+
+Previous = 50,000
+Current  = 60,000
+
+(60,000 - 50,000) / 50,000 × 100
+= 20%
+Query
+SELECT *,
+       (salary - previous_salary) / previous_salary * 100
+       AS percentage_change
+FROM (
+    SELECT *,
+           LAG(salary) OVER(
+               PARTITION BY department
+               ORDER BY salary
+           ) AS previous_salary
+    FROM employees
+) AS d1;
+🔥 Important LAG & LEAD Rules
+LAG()
+LAG(column) OVER(...)
+
+Means:
+
+Give me the value from the previous row.
+
+LEAD()
+LEAD(column) OVER(...)
+
+Means:
+
+Give me the value from the next row.
+
+PARTITION BY
+PARTITION BY department
+
+Means each department is handled separately.
+
+ORDER BY
+ORDER BY salary
+
+Defines what previous and next mean.
+
+⭐ Different Approaches We Practiced
+Approach 1 — Direct LAG/LEAD
+
+Use when you only need the previous/next value:
+
+SELECT *,
+       LAG(salary) OVER(...) AS previous_salary
+FROM employees;
+Approach 2 — Derived Table
+
+Use when you need to reuse the LAG/LEAD result in another calculation:
+
+SELECT *,
+       salary - previous_salary
+FROM (
+    SELECT *,
+           LAG(salary) OVER(...) AS previous_salary
+    FROM employees
+) AS d1;
+
+This is the same idea you already learned with derived subqueries:
+
+INNER QUERY
+     ↓
+creates new column
+     ↓
+OUTER QUERY
+     ↓
+uses that column
+Final cheat sheet
+Requirement	Function
+Previous row	LAG()
+Next row	LEAD()
+Previous salary	LAG(salary)
+Next salary	LEAD(salary)
+Previous within department	PARTITION BY department + LAG()
+Next within department	PARTITION BY department + LEAD()
+Difference using previous	LAG() + calculation
+Difference using next	LEAD() + calculation
+Reuse LAG/LEAD result	Derived table
+
+That's a solid set for LAG & LEAD. You don't need more repetitive questions right now. 🔥
