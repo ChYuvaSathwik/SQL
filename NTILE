@@ -1,0 +1,531 @@
+# NTILE() — SQL Window Function
+
+## Employee Table
+
+| ID | Name  | Department | Salary |
+| -: | ----- | ---------- | -----: |
+|  1 | John  | IT         |  50000 |
+|  2 | Sam   | IT         |  60000 |
+|  3 | Mike  | IT         |  70000 |
+|  4 | Alice | HR         |  40000 |
+|  5 | Bob   | HR         |  45000 |
+|  6 | David | Sales      |  70000 |
+|  7 | Tom   | Sales      |  50000 |
+|  8 | Emma  | Sales      |  80000 |
+
+---
+
+# What is NTILE()?
+
+`NTILE(n)` divides the rows in a window into **n approximately equal groups (buckets)**.
+
+### Syntax
+
+```sql
+NTILE(number_of_groups) OVER(
+    ORDER BY column
+)
+```
+
+Example:
+
+```sql
+NTILE(2) OVER(
+    ORDER BY Salary DESC
+)
+```
+
+This divides the rows into **2 groups**.
+
+---
+
+# Important Rules
+
+### 1. `ORDER BY` determines the order of rows
+
+```sql
+ORDER BY Salary DESC
+```
+
+means:
+
+```text
+Highest salary → Lowest salary
+```
+
+Therefore, the highest salaries get the earlier bucket numbers.
+
+---
+
+### 2. `NTILE(2)` creates 2 groups
+
+```text
+Group 1
+Group 2
+```
+
+### 3. `NTILE(4)` creates 4 groups
+
+```text
+Group 1
+Group 2
+Group 3
+Group 4
+```
+
+### 4. Groups are as equal as possible
+
+If there are 8 rows:
+
+```text
+8 ÷ 2 = 4
+
+Group 1 → 4 rows
+Group 2 → 4 rows
+```
+
+If there are 7 rows:
+
+```text
+7 ÷ 2 = 3 remainder 1
+
+Group 1 → 4 rows
+Group 2 → 3 rows
+```
+
+The earlier groups receive the extra rows.
+
+---
+
+# PARTITION BY with NTILE()
+
+`PARTITION BY` makes the bucketing happen **separately for each group**.
+
+Example:
+
+```sql
+NTILE(2) OVER(
+    PARTITION BY Department
+    ORDER BY Salary DESC
+)
+```
+
+This means:
+
+```text
+IT     → divide IT employees into 2 groups
+HR     → divide HR employees into 2 groups
+Sales  → divide Sales employees into 2 groups
+```
+
+It does NOT divide all employees together.
+
+---
+
+# Question 1
+
+### Divide all employees into 2 salary groups, with the highest-paid employees in Group 1.
+
+### Answer
+
+```sql
+SELECT *,
+       NTILE(2) OVER(
+           ORDER BY Salary DESC
+       ) AS salary_group
+FROM Employees;
+```
+
+### Result
+
+| Name  | Salary | salary_group |
+| ----- | -----: | -----------: |
+| Emma  |  80000 |            1 |
+| Mike  |  70000 |            1 |
+| David |  70000 |            1 |
+| Sam   |  60000 |            1 |
+| John  |  50000 |            2 |
+| Tom   |  50000 |            2 |
+| Bob   |  45000 |            2 |
+| Alice |  40000 |            2 |
+
+---
+
+# Question 2
+
+### Divide all employees into 4 salary groups, with the highest-paid employees in Group 1.
+
+### Answer
+
+```sql
+SELECT *,
+       NTILE(4) OVER(
+           ORDER BY Salary DESC
+       ) AS salary_group
+FROM Employees;
+```
+
+Because there are 8 employees:
+
+```text
+8 ÷ 4 = 2
+```
+
+Each group gets 2 employees.
+
+### Result
+
+| Name  | Salary | salary_group |
+| ----- | -----: | -----------: |
+| Emma  |  80000 |            1 |
+| Mike  |  70000 |            1 |
+| David |  70000 |            2 |
+| Sam   |  60000 |            2 |
+| John  |  50000 |            3 |
+| Tom   |  50000 |            3 |
+| Bob   |  45000 |            4 |
+| Alice |  40000 |            4 |
+
+---
+
+# Question 3
+
+### Divide employees into 2 salary groups separately within each department, with the highest-paid employees in Group 1.
+
+### Answer
+
+```sql
+SELECT *,
+       NTILE(2) OVER(
+           PARTITION BY Department
+           ORDER BY Salary DESC
+       ) AS salary_group
+FROM Employees;
+```
+
+### Result
+
+| Name  | Department | Salary | salary_group |
+| ----- | ---------- | -----: | -----------: |
+| Mike  | IT         |  70000 |            1 |
+| Sam   | IT         |  60000 |            1 |
+| John  | IT         |  50000 |            2 |
+| Bob   | HR         |  45000 |            1 |
+| Alice | HR         |  40000 |            2 |
+| Emma  | Sales      |  80000 |            1 |
+| David | Sales      |  70000 |            1 |
+| Tom   | Sales      |  50000 |            2 |
+
+---
+
+# Question 4
+
+### Divide employees in each department into 2 salary groups and display only Group 1 employees.
+
+Since we cannot directly use the window-function alias in the same `WHERE` level, use a subquery.
+
+### Answer
+
+```sql
+SELECT *
+FROM (
+    SELECT *,
+           NTILE(2) OVER(
+               PARTITION BY Department
+               ORDER BY Salary DESC
+           ) AS salary_group
+    FROM Employees
+) AS D1
+WHERE D1.salary_group = 1;
+```
+
+### Result
+
+| Name  | Department | Salary | salary_group |
+| ----- | ---------- | -----: | -----------: |
+| Mike  | IT         |  70000 |            1 |
+| Sam   | IT         |  60000 |            1 |
+| Bob   | HR         |  45000 |            1 |
+| Emma  | Sales      |  80000 |            1 |
+| David | Sales      |  70000 |            1 |
+
+---
+
+# Question 5
+
+### Divide all employees into 4 salary groups and display only Group 1.
+
+### Answer
+
+```sql
+SELECT *
+FROM (
+    SELECT *,
+           NTILE(4) OVER(
+               ORDER BY Salary DESC
+           ) AS salary_group
+    FROM Employees
+) AS D1
+WHERE D1.salary_group = 1;
+```
+
+### Result
+
+| Name | Department | Salary | salary_group |
+| ---- | ---------- | -----: | -----------: |
+| Emma | Sales      |  80000 |            1 |
+| Mike | IT         |  70000 |            1 |
+
+---
+
+# ASC vs DESC
+
+This is important.
+
+### Highest salary in Group 1
+
+Use:
+
+```sql
+ORDER BY Salary DESC
+```
+
+Example:
+
+```text
+80000 → Group 1
+70000 → Group 1
+60000 → Group 2
+50000 → Group 2
+```
+
+### Lowest salary in Group 1
+
+Use:
+
+```sql
+ORDER BY Salary ASC
+```
+
+Example:
+
+```text
+40000 → Group 1
+45000 → Group 1
+50000 → Group 2
+60000 → Group 2
+```
+
+---
+
+# NTILE() with Uneven Rows
+
+Suppose there are 3 employees:
+
+```text
+Mike  70000
+Sam   60000
+John  50000
+```
+
+Using:
+
+```sql
+NTILE(2)
+```
+
+we have:
+
+```text
+3 ÷ 2 = 1 remainder 1
+```
+
+Therefore:
+
+```text
+Group 1 → 2 employees
+Group 2 → 1 employee
+```
+
+The extra row goes to the earlier bucket.
+
+| Name | Salary | Group |
+| ---- | -----: | ----: |
+| Mike |  70000 |     1 |
+| Sam  |  60000 |     1 |
+| John |  50000 |     2 |
+
+---
+
+# Important: NTILE() Does Not Handle Ties Like RANK()
+
+Suppose:
+
+```text
+Emma   80000
+Mike   70000
+David  70000
+Sam    60000
+```
+
+`NTILE()` simply distributes rows according to their ordered position.
+
+It does **not** guarantee that equal salaries stay in the same bucket.
+
+So two employees with the same salary can potentially be placed in different groups when a bucket boundary falls between them.
+
+---
+
+# NTILE() vs RANK()
+
+| Function       | Purpose                                           |
+| -------------- | ------------------------------------------------- |
+| `RANK()`       | Assigns rankings and leaves gaps after ties       |
+| `DENSE_RANK()` | Assigns rankings without gaps                     |
+| `ROW_NUMBER()` | Gives every row a unique sequential number        |
+| `NTILE(n)`     | Divides rows into `n` approximately equal buckets |
+
+Example:
+
+```text
+Salaries:
+80000
+70000
+70000
+60000
+50000
+```
+
+`RANK()`:
+
+```text
+1
+2
+2
+4
+5
+```
+
+`DENSE_RANK()`:
+
+```text
+1
+2
+2
+3
+4
+```
+
+`ROW_NUMBER()`:
+
+```text
+1
+2
+3
+4
+5
+```
+
+`NTILE(2)`:
+
+```text
+1
+1
+1
+2
+2
+```
+
+---
+
+# Real-World Uses of NTILE()
+
+`NTILE()` is useful when dividing records into groups such as:
+
+* Top 10% customers
+* Bottom 25% employees
+* Salary quartiles
+* Customer spending segments
+* Performance groups
+* High / medium / low performers
+* Ranking customers into equal-sized buckets
+
+For example:
+
+```sql
+NTILE(4)
+```
+
+can divide employees into **four salary quartiles**.
+
+---
+
+# Mental Model
+
+```text
+NTILE(2)
+     ↓
+Create 2 buckets
+
+PARTITION BY Department
+     ↓
+Do it separately for each department
+
+ORDER BY Salary DESC
+     ↓
+Highest salary comes first
+
+Bucket number
+     ↓
+1, 2, 3, ...
+```
+
+### One-line definition
+
+> **`NTILE(n)` divides the rows in each window into `n` approximately equal-sized buckets according to the specified `ORDER BY`.**
+
+---
+
+# NTILE() Cheat Sheet
+
+### 2 groups
+
+```sql
+NTILE(2) OVER(
+    ORDER BY Salary DESC
+)
+```
+
+### 4 groups
+
+```sql
+NTILE(4) OVER(
+    ORDER BY Salary DESC
+)
+```
+
+### Separate groups by department
+
+```sql
+NTILE(2) OVER(
+    PARTITION BY Department
+    ORDER BY Salary DESC
+)
+```
+
+### Filter a bucket
+
+Use a subquery:
+
+```sql
+SELECT *
+FROM (
+    SELECT *,
+           NTILE(2) OVER(
+               PARTITION BY Department
+               ORDER BY Salary DESC
+           ) AS salary_group
+    FROM Employees
+) AS D1
+WHERE salary_group = 1;
+```
